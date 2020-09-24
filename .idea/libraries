@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="libraryTable">
+    <library name="mssql-jdbc-7.4.1.jre12">
+      <CLASSES>
+        <root url="jar://E:/sqljdbc_7.4/enu/mssql-jdbc-7.4.1.jre12.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+  </component>
+</project>
