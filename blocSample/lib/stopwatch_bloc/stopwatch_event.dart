@@ -9,6 +9,10 @@ class IncreasingCounter extends StopWatchEvent {
   IncreasingCounter(int counter) : super(payload: counter);
 }
 
+class StopCounter extends StopWatchEvent {
+  StopCounter(int counter) : super(payload: counter);
+}
+
 class ResetCounter extends StopWatchEvent {
   ResetCounter(int counter) : super(payload: counter);
 }

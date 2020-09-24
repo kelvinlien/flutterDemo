@@ -25,10 +25,17 @@ class CounterInitialState extends StopWatchState {
 
 class UpdateState extends StopWatchState {
   UpdateState(StopWatchState oldState,
-      {int counter, int hour, int minute, int second})
+      {int counter,
+      int hour,
+      int minute,
+      int second,
+      bool started,
+      bool running})
       : super(
             counter: counter ?? oldState.counter,
             hours: hour ?? oldState.hours,
             minutes: minute ?? oldState.minutes,
-            seconds: second ?? oldState.seconds);
+            seconds: second ?? oldState.seconds,
+            started: started ?? oldState.started,
+            running: running ?? oldState.running);
 }
