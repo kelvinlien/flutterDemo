@@ -9,26 +9,30 @@ class StopWatchBloc extends Bloc<StopWatchEvent, StopWatchState> {
   Stream<StopWatchState> mapEventToState(StopWatchEvent event) async* {
     if (event is IncreasingCounter) {
       int counter = event.payload + 1;
-      int h = counter ~/ 3600;
-      int m = (counter - (h * 3600)) ~/ 60;
-      int s = (counter - (h * 3600) - (m * 60)) % 60;
+      int seconds = counter ~/ 100;
+      int m = seconds ~/ 60;
+      int s = seconds - (m * 60);
+      int cs = counter - (seconds * 100);
       yield UpdateState(state,
           counter: counter,
-          hour: h,
           minute: m,
           second: s,
+          centisecond: cs,
           running: true,
           started: true);
     } else if (event is ResetCounter) {
       yield UpdateState(state,
           counter: 0,
-          hour: 0,
           minute: 0,
           second: 0,
+          centisecond: 0,
+          laps: 0,
           running: false,
           started: false);
     } else if (event is StopCounter) {
       yield UpdateState(state, running: false, started: true);
+    } else if (event is AddLap) {
+      yield UpdateState(state, laps: event.payload + 1);
     }
   }
 }

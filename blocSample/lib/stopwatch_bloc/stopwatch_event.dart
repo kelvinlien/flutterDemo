@@ -16,3 +16,7 @@ class StopCounter extends StopWatchEvent {
 class ResetCounter extends StopWatchEvent {
   ResetCounter(int counter) : super(payload: counter);
 }
+
+class AddLap extends StopWatchEvent {
+  AddLap(int counter) : super(payload: counter);
+}

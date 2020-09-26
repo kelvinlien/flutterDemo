@@ -1,9 +1,18 @@
 import 'package:blocSample/stopwatch_bloc/stopwatch_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'dart:async';
+import 'package:blocSample/database/db_helper.dart';
+import 'package:blocSample/controller/lap.dart';
 
-void main() {
+// get instance of DbHelper
+DbHelper _dbHelper = DbHelper();
+LapController _lapCtrl = LapController();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // open Db before running app
+  await _dbHelper.openDb();
   runApp(MyApp());
 }
 
@@ -31,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   StopWatchBloc _swBloc;
   Timer timer;
-  final onesec = Duration(seconds: 1);
+  final onesec = Duration(milliseconds: 10);
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _swBloc.add(
           ResetCounter(_swBloc.state.counter),
         );
+        _lapCtrl.clearLaps();
       },
     );
 
@@ -85,7 +95,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     RaisedButton lapButton = RaisedButton(
       child: Text("Lap"),
-      onPressed: null,
+      onPressed: () {
+        _swBloc.add(
+          AddLap(_swBloc.state.counter),
+        );
+        _lapCtrl.addLap(_swBloc.state.minutes, _swBloc.state.seconds,
+            _swBloc.state.centiseconds, _swBloc.state.laps);
+      },
     );
 
     return Scaffold(
@@ -98,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
             BlocBuilder<StopWatchBloc, StopWatchState>(
               builder: (context, state) {
                 return Text(
-                  '${state.hours.toString().padLeft(2, "0")}:${state.minutes.toString().padLeft(2, "0")}:${state.seconds.toString().padLeft(2, "0")}',
+                  '${state.minutes.toString().padLeft(2, "0")}:${state.seconds.toString().padLeft(2, "0")}:${state.centiseconds.toString().padLeft(2, "0")}',
                   style: TextStyle(
                     fontSize: 90.0,
                   ),
