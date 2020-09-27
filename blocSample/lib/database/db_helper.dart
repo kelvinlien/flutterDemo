@@ -26,12 +26,8 @@ class DbHelper {
   }
 
   void _createDb(Database db, int newVersion) async {
-    await _db.execute("CREATE TABLE laps ("
-        "order INTEGER PRIMARY KEY,"
-        "minute INTEGER,"
-        "second INTEGER,"
-        "centisecond INTEGER"
-        ")");
+    await _db.execute(
+        'CREATE TABLE laps (order INTEGER PRIMARY KEY, minute INTEGER, second INTEGER, centisecond INTEGER)');
   }
 
   Future<void> insertLap(Lap lap) async {

@@ -124,22 +124,22 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 100,
             ),
-            BlocBuilder<StopWatchBloc, StopWatchState>(
-              builder: (context, state) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    !state.started
-                        ? startButton
-                        : state.running ? stopButton : resumeButton,
-                    !state.started
-                        ? disabledResetButton
-                        : state.running ? lapButton : resetButton
-                  ],
-                );
-              },
-            ),
           ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: BlocBuilder<StopWatchBloc, StopWatchState>(
+          builder: (context, state) => ButtonBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            children: [
+              !state.started
+                  ? startButton
+                  : state.running ? stopButton : resumeButton,
+              !state.started
+                  ? disabledResetButton
+                  : state.running ? lapButton : resetButton
+            ],
+          ),
         ),
       ),
     );
