@@ -97,10 +97,11 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Text("Lap"),
       onPressed: () {
         _swBloc.add(
-          AddLap(_swBloc.state.counter),
+          AddLap(_swBloc.state.laps),
         );
         _lapCtrl.addLap(_swBloc.state.minutes, _swBloc.state.seconds,
             _swBloc.state.centiseconds, _swBloc.state.laps);
+        _lapCtrl.getListOfLaps();
       },
     );
 
@@ -121,8 +122,58 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
-            SizedBox(
-              height: 100,
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: BlocBuilder<StopWatchBloc, StopWatchState>(
+                builder: (context, state) {
+                  return new FutureBuilder(
+                      future: _lapCtrl.getListOfLaps(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return Container();
+                        else {
+                          List content = snapshot.data;
+                          return DataTable(
+                            columns: const <DataColumn>[
+                              DataColumn(
+                                label: Text(
+                                  'Lap',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'Minute',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'Second',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'Centisec',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                            ],
+                            rows: content
+                                .map((lap) => DataRow(cells: <DataCell>[
+                                      DataCell(Text(lap.getID().toString())),
+                                      DataCell(Text(lap.getMin().toString())),
+                                      DataCell(Text(lap.getSec().toString())),
+                                      DataCell(
+                                          Text(lap.getCentisec().toString())),
+                                    ]))
+                                .toList(),
+                          );
+                        }
+                      });
+                },
+              ),
             ),
           ],
         ),

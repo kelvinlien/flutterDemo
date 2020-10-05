@@ -8,6 +8,7 @@ import 'package:blocSample/model/lap.dart';
 class DbHelper {
   static final DbHelper _dbHelper = DbHelper._internal();
   static Database _db;
+  String _tableName = "laps";
 
   DbHelper._internal();
 
@@ -17,17 +18,30 @@ class DbHelper {
 
   Future<bool> openDb() async {
     if (_db == null) {
-      print("openning db pls wait");
       var dbPath = join(await getDatabasesPath(), 'lappie_database.db');
-      _db = await openDatabase(dbPath, version: 1, onCreate: _createDb);
-      print("done openning db");
+      _db = await openDatabase(dbPath, version: 1,
+          onCreate: (Database _db, int version) async {
+        await _db.execute("CREATE TABLE " +
+            _tableName +
+            " (" +
+            "id INTEGER PRIMARY KEY, " + //0
+            "minute INTEGER," + //1
+            "second INTEGER," + //2
+            "centisecond INTEGER" +
+            ")");
+      });
     }
+    tableIsEmpty();
     return (_db != null);
   }
 
-  void _createDb(Database db, int newVersion) async {
-    await _db.execute(
-        'CREATE TABLE laps (order INTEGER PRIMARY KEY, minute INTEGER, second INTEGER, centisecond INTEGER)');
+  void tableIsEmpty() async {
+    var db = await _db;
+
+    int count =
+        Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM laps'));
+
+    print(count);
   }
 
   Future<void> insertLap(Lap lap) async {
@@ -41,12 +55,12 @@ class DbHelper {
   Future<List<Lap>> laps() async {
     // Query the table for all The laps.
     final List<Map<String, dynamic>> maps =
-        await _db.rawQuery("SELECT * FROM laps ORDER BY order ASC");
+        await _db.rawQuery("SELECT * FROM laps ORDER BY id ASC");
 
     // Convert the List<Map<String, dynamic> into a List<lap>.
     return List.generate(maps.length, (i) {
       return Lap(
-          order: maps[i]['order'],
+          id: maps[i]['id'],
           minute: maps[i]['minute'],
           second: maps[i]['second'],
           centisecond: maps[i]['centisecond']);
@@ -55,9 +69,9 @@ class DbHelper {
 
   Future<int> getCurrentOrder() async {
     final List<Map<String, dynamic>> currentLaps =
-        await _db.rawQuery("SELECT * FROM laps ORDER BY order DESC");
+        await _db.rawQuery("SELECT * FROM laps ORDER BY id DESC");
     var lastLaps = currentLaps.first;
-    return lastLaps['order'] ?? 0;
+    return lastLaps['id'] ?? 0;
   }
 
   Future<void> updatelap(Lap lap) async {
@@ -66,20 +80,20 @@ class DbHelper {
       'laps',
       lap.toMap(),
       // Ensure that the lap has a matching id.
-      where: "order = ?",
+      where: "id = ?",
       // Pass the lap's id as a whereArg to prevent SQL injection.
-      whereArgs: [lap.order],
+      whereArgs: [lap.id],
     );
   }
 
-  Future<void> deletelap(int order) async {
+  Future<void> deletelap(int id) async {
     // Remove the lap from the database.
     await _db.delete(
       'laps',
       // Use a `where` clause to delete a specific lap.
-      where: "order = ?",
+      where: "id = ?",
       // Pass the lap's id as a whereArg to prevent SQL injection.
-      whereArgs: [order],
+      whereArgs: [id],
     );
   }
 

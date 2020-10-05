@@ -13,18 +13,15 @@ class LapController {
   LapController._internal();
   void addLap(int minute, int second, int centisecond, int laps) async {
     // int order = await _dbHelper.getCurrentOrder() + 1;
-    int order = laps + 1;
-    print("order " +
-        order.toString() +
-        " minute " +
-        minute.toString() +
-        " second " +
-        second.toString() +
-        " minisecond " +
-        centisecond.toString());
-    Lap newLap = Lap(
-        minute: minute, second: second, centisecond: centisecond, order: order);
+    int id = laps + 1;
+    Lap newLap =
+        Lap(minute: minute, second: second, centisecond: centisecond, id: id);
     _dbHelper.insertLap(newLap);
+  }
+
+  Future<List<Lap>> getListOfLaps() async {
+    List<Lap> lapsList = await _dbHelper.laps();
+    return lapsList;
   }
 
   void clearLaps() async {
